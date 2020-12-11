@@ -163,6 +163,7 @@ func main() {
 	case "auth":
 		authCmd.Parse(flag.Args()[1:])
 		username := authCmd.Arg(0)
+		pwd := authCmd.Arg(1)
 		if username == "" {
 			log.Fatal("usage: hydroxide auth <username>")
 		}
@@ -181,13 +182,16 @@ func main() {
 
 		var loginPassword string
 		if a == nil {
-			fmt.Printf("Password: ")
-			if pass, err := gopass.GetPasswd(); err != nil {
-				log.Fatal(err)
+			if pwd != "" {
+				loginPassword = string(pwd)
 			} else {
-				loginPassword = string(pass)
+				fmt.Printf("Password: ")
+				if pass, err := gopass.GetPasswd(); err != nil {
+					log.Fatal(err)
+				} else {
+					loginPassword = string(pass)
+				}
 			}
-
 			authInfo, err := c.AuthInfo(username)
 			if err != nil {
 				log.Fatal(err)
